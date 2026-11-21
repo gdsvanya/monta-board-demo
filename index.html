@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="ru-RU" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102630">
+<title>MONTA — Доска задач</title>
+<style>*{box-sizing:border-box}
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#162e39;background:#f7f9fb;font-synthesis:none;line-height:1.45;--ink:#162e39;--muted:#5c707b;--line:#dce5e9;--teal:#136361;--accent:#baf280}
+body{margin:0}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.6;cursor:wait}[hidden]{display:none!important}
+:focus-visible{outline:3px solid #1c8783;outline-offset:3px}
+.layout{display:grid;grid-template-columns:244px minmax(0,1fr);min-height:100vh}
+.sidebar{background:#102630;color:#eff8f7;padding:28px 17px;min-width:0}
+.brand{display:flex;align-items:center;gap:12px;padding:0 4px 34px;border-bottom:1px solid #2b424b}
+.brand-mark{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:12px;background:var(--accent);color:#122a2f}
+.brand-mark svg{width:23px;height:23px}
+.wordmark{font-size:1.23rem;line-height:1.1;font-weight:850;letter-spacing:.12em}
+.brand-caption{font-size:.75rem;color:#bccdd3;margin-top:4px}
+.sidebar-head{display:flex;align-items:center;justify-content:space-between;margin:25px 4px 10px}
+.sidebar-head h2{margin:0;color:#c4d4d9;font-size:.78rem;text-transform:uppercase;letter-spacing:.11em}
+.side-add,.icon-button{display:grid;place-items:center;background:transparent;border:0;color:inherit;border-radius:8px;width:34px;height:34px;padding:0}
+.side-add:hover,.object:hover{background:#203b46}
+#objects{display:grid;gap:5px}
+.object{display:flex;align-items:center;gap:10px;width:100%;padding:11px 10px;background:transparent;border:1px solid transparent;color:#edf6f6;border-radius:9px;text-align:left;overflow-wrap:anywhere;font-size:.9rem}
+.object svg{flex:none;color:#b1c7ca}
+.object[aria-current=true]{background:#24444c;border-color:#3d6066;color:#fff;font-weight:650}
+.object[aria-current=true] svg{color:var(--accent)}
+.topbar{height:69px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.crumb{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.875rem}.crumb strong{color:var(--ink)}.slash{color:#a0aeb7}
+.avatar{background:#e4f2ee;color:#155e58;border:1px solid #d0e6df;border-radius:50%;width:36px;height:36px;display:grid;place-items:center;font-weight:750}
+.content{max-width:1700px;margin:auto;padding:37px 32px 36px}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:27px}
+.eyebrow{display:flex;align-items:center;gap:6px;color:var(--teal);font-size:.78rem;text-transform:uppercase;letter-spacing:.11em;font-weight:760}
+.eyebrow svg{width:15px;height:15px}
+h1{font-size:clamp(2rem,4vw,3.1rem);line-height:1.1;letter-spacing:-.045em;margin:8px 0}
+.muted{color:var(--muted);margin:0;font-size:.94rem}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;border-radius:9px;padding:8px 13px;font-size:.875rem;font-weight:710;white-space:nowrap}
+.primary{background:var(--accent);color:#183128;border:1px solid #a2db66}.primary:hover{background:#a9e76b}
+.outline{background:#fff;color:var(--ink);border:1px solid #d0dde2}.outline:hover{background:#edf5f4}
+svg{width:18px;height:18px;vertical-align:middle}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tab{display:flex;align-items:center;gap:7px;font-weight:730;color:#185e5b;padding:12px 7px;border-bottom:2px solid #237d72}
+.search{margin:0 0 7px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:white;color:var(--muted);border-radius:8px;padding:6px 9px}
+.search input{border:0;background:transparent;width:min(177px,36vw);font-size:.875rem;padding:1px;color:var(--ink)}
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}
+.column{background:#edf2f5;border:1px solid #e0e8ec;border-radius:13px;padding:11px;min-height:365px;transition:background .15s}
+.column.drop{background:#d8efe9;border-color:#8bbcb0}
+.column-head{display:flex;align-items:center;gap:7px;padding:1px 2px 12px}
+.column h2{font-size:.875rem;margin:0;flex:1}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--dot);flex:none}
+.count{background:#fff;border-radius:999px;padding:2px 7px;font-size:.78rem;color:var(--muted);font-weight:700}
+.mini-add{background:transparent;border:0;color:#536d76;padding:3px;border-radius:6px;line-height:1}
+.mini-add:hover{background:#d9e5e9}
+.cards{display:grid;gap:9px}
+.card{display:block;width:100%;text-align:left;background:white;color:var(--ink);border:1px solid #d8e3e8;border-radius:10px;padding:12px;box-shadow:0 2px 4px #1a39470a;overflow-wrap:anywhere}
+.card:hover{border-color:#82aba9}
+.card-title{display:block;font-size:.95rem;line-height:1.33;font-weight:740}
+.card-meta{display:grid;gap:6px;color:var(--muted);margin-top:11px;font-size:.81rem}
+.card-meta span{display:flex;align-items:center;gap:6px}
+.card-meta svg{width:15px;height:15px;flex:none}
+.priority{display:inline-block;color:#8d3714;background:#ffede3;border-radius:5px;padding:2px 6px;font-size:.73rem;font-weight:750;margin:0 0 7px}
+.empty{border:1px dashed #c6d6de;border-radius:9px;padding:16px 6px;text-align:center;color:var(--muted);font-size:.875rem}
+dialog{border:1px solid var(--line);border-radius:15px;background:white;color:var(--ink);padding:0;width:min(560px,calc(100% - 24px));max-height:calc(100% - 24px);box-shadow:0 20px 65px #10263052}
+dialog::backdrop{background:#10263088}
+dialog form{display:grid;gap:12px;padding:20px}
+.dialog-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.dialog-head h2{margin:0;font-size:1.35rem;line-height:1.2}
+.icon-button:hover{background:#eef2f3}
+dialog label{display:grid;gap:4px;font-size:.875rem;font-weight:650;min-width:0}
+dialog input,dialog select,dialog textarea{width:100%;border:1px solid #cbd9df;background:white;color:var(--ink);border-radius:8px;padding:8px 9px;min-height:42px;font-size:1rem}
+textarea{resize:vertical}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dialog-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;flex-wrap:wrap}
+.danger,.text-button{background:transparent;border:0;border-radius:6px;padding:5px;color:#336b67;font-size:.875rem;font-weight:700}
+.danger{margin-right:auto;color:#a12b2b}
+.error:empty{display:none}.error,.load-error{color:#962d27;margin:0;font-size:.875rem}
+.load-error{margin-bottom:12px}
+.voice-panel{display:grid;justify-items:start;gap:7px;padding:10px;background:#eef8f6;border:1px solid #cce4de;border-radius:9px}
+.voice-panel label{width:100%}#voice-status{font-size:.875rem;color:var(--muted)}
+.photo-preview img{display:block;max-width:100%;max-height:125px;border-radius:8px}
+#toast{position:fixed;right:18px;bottom:18px;z-index:5;background:#153a3c;color:white;max-width:calc(100vw - 36px);border-radius:9px;padding:10px 14px;box-shadow:0 5px 12px #10263030}
+@media(max-width:1100px){.layout{grid-template-columns:202px minmax(0,1fr)}.content,.topbar{padding-left:22px;padding-right:22px}.board{gap:9px}.column{padding:8px}}
+@media(max-width:880px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}.column{min-height:245px}.hero{align-items:flex-start;flex-direction:column}}
+@media(max-width:600px){.layout{display:block}.sidebar{padding:12px 15px}.brand{padding:0 0 10px}.brand-mark{width:35px;height:35px}.sidebar-head{margin:4px 0 3px}#objects{display:flex;overflow:auto}.object{width:auto;white-space:nowrap;padding:6px 9px}.topbar{height:49px}.content,.topbar{padding-left:13px;padding-right:13px}.content{padding-top:18px}.hero{margin-bottom:11px}.column h2{font-size:.82rem}.column-head{gap:4px}.column{min-height:170px}.crumb{font-size:.78rem;gap:5px}.actions{gap:6px}.actions .button{padding-inline:8px;white-space:normal}.brand-caption{font-size:.73rem}}
+@media(max-width:350px){.board,.field-row{grid-template-columns:1fr}}
+.check-row{display:grid;grid-template-columns:25px minmax(0,1fr) 34px;align-items:center;gap:6px;margin:6px 0}.check-row input[type=checkbox]{min-height:20px;width:20px;accent-color:#186961}.check-row:has(:checked) input:nth-child(2){text-decoration:line-through;color:#617780}.master-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0}#history-list{margin:0;padding-left:24px}#history-list li{margin-bottom:8px}</style>
+
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark" data-icon="bolt"></span><div><div class="wordmark">MONTA</div><div class="brand-caption">Управление работами</div></div></div>
+    <div class="sidebar-head"><h2>Объекты</h2><button id="add-object" class="side-add" type="button" aria-label="Добавить объект" data-icon="plus"></button></div>
+    <nav id="objects" aria-label="Объекты"></nav>
+  </aside>
+  <main>
+    <header class="topbar"><div class="crumb"><span data-icon="board"></span><span>Рабочее пространство</span><span class="slash">/</span><strong>Доска задач</strong></div><div class="avatar" aria-label="Рабочее пространство MONTA">M</div></header>
+    <div class="content">
+      <section class="hero" aria-labelledby="object-title">
+        <div><div class="eyebrow"><span data-icon="pin"></span> Объект</div><h1 id="object-title">Демо-объект</h1><p id="summary" class="muted">Загрузка задач…</p></div>
+        <div class="actions"><button type="button" class="button outline" id="team-open" disabled>＋ Мастер</button><button type="button" class="button outline" id="history-open" disabled>История</button><button id="voice" class="button outline" type="button" disabled><span data-icon="mic"></span> Продиктовать задачу</button><button id="add-task" class="button primary" type="button" disabled><span data-icon="plus"></span> Новая задача</button></div>
+      </section>
+      <div class="toolbar"><div class="tab"><span data-icon="board"></span> Доска</div><button type="button" id="new-list" class="text-button">＋ Колонка</button><label class="search"><span data-icon="search"></span><input id="search" type="search" aria-label="Поиск по задачам" placeholder="Поиск по задачам"></label></div>
+      <div id="load-error" class="load-error" hidden><span id="load-message"></span> <button type="button" class="button outline" id="retry">Повторить</button></div>
+      <div id="board" class="board" aria-label="Колонки доски"></div>
+    </div>
+  </main>
+</div>
+<dialog id="task-dialog">
+  <form id="task-form">
+    <header class="dialog-head"><h2 id="task-heading">Новая задача</h2><button class="icon-button" type="button" data-close aria-label="Закрыть" data-icon="close"></button></header>
+    <div id="voice-panel" class="voice-panel" hidden>
+      <button id="listen" class="button outline" type="button"><span data-icon="mic"></span><span id="listen-label">Начать запись</span></button>
+      <div id="voice-status" role="status"></div><button type="button" id="system-voice" class="text-button">Диктовка Windows · Win + H</button>
+    </div>
+    <label>Задача<input name="title" required maxlength="500" placeholder="Что нужно сделать?"></label>
+    <div class="field-row"><label>Объект<select name="object_id" id="task-object"></select></label><label>Статус<select name="status" id="task-status"></select></label></div>
+    <div class="field-row"><label>Имя<input name="assignee" list="saved-names" maxlength="80" placeholder="Например, Иван"></label><datalist id="saved-names"></datalist><label>Срок<input name="due" type="date"></label></div>
+    <label>Приоритет<select name="priority"><option value="normal">Не срочно</option><option value="high">Срочно</option></select></label>
+    <section><strong>Чек-лист</strong><div id="checks"></div><button type="button" id="add-check" class="text-button">＋ Добавить пункт</button></section><label>Заметки<textarea name="notes" maxlength="2500" rows="3" placeholder="Что нужно знать по задаче"></textarea></label>
+    <label>Фото с объекта<input id="photo" type="file" accept="image/*"></label>
+    <div class="photo-preview" id="photo-preview" hidden><img id="photo-image" alt="Фото по задаче"><button type="button" class="text-button" id="remove-photo">Убрать фото</button></div>
+    <p class="error" id="task-error" role="alert"></p>
+    <footer class="dialog-actions"><button class="danger" type="button" id="delete-task">Удалить</button><button class="button outline" type="button" data-close>Отмена</button><button class="button primary" id="save-task" type="submit">Создать задачу</button></footer>
+  </form>
+</dialog>
+<dialog id="team-dialog" aria-labelledby="team-heading">
+<form id="team-form">
+<header class="dialog-head"><h2 id="team-heading">Мастера объекта</h2><button class="icon-button" type="button" data-close aria-label="Закрыть" data-icon="close"></button></header>
+<div id="team-list"></div>
+<label>Имя мастера<input id="master-name" required maxlength="80" placeholder="Илья"></label>
+<p id="team-error" class="error" role="alert"></p>
+<footer class="dialog-actions"><button class="button primary" type="submit">Добавить мастера</button></footer>
+</form>
+</dialog>
+<dialog id="history-dialog" aria-labelledby="history-heading">
+<form method="dialog">
+<header class="dialog-head"><h2 id="history-heading">История объекта</h2><button class="icon-button" type="submit" aria-label="Закрыть" data-icon="close"></button></header>
+<ol id="history-list"></ol>
+</form>
+</dialog>
+<dialog id="column-dialog" aria-labelledby="column-heading">
+  <form id="column-form">
+    <header class="dialog-head"><h2 id="column-heading">Новая колонка</h2></header>
+    <label>Название<input id="column-name" required maxlength="50" autofocus></label>
+    <p id="column-error" class="error" role="alert"></p>
+    <footer class="dialog-actions"><button class="button outline" type="button" data-close>Отмена</button><button class="button primary" type="submit">Добавить</button></footer>
+  </form>
+</dialog>
+<dialog id="object-dialog">
+  <form id="object-form">
+    <header class="dialog-head"><h2>Новый объект</h2><button class="icon-button" type="button" data-close aria-label="Закрыть" data-icon="close"></button></header>
+    <label>Адрес<input name="name" required maxlength="90" placeholder="Улица, номер дома"></label>
+    <p class="error" id="object-error" role="alert"></p>
+    <footer class="dialog-actions"><button class="button outline" type="button" data-close>Отмена</button><button class="button primary" type="submit">Добавить объект</button></footer>
+  </form>
+</dialog>
+<div id="toast" role="status" hidden></div>
+<script>const $ = id => document.getElementById(id);
+const icons = {
+  bolt:'<path d="m13 2-9 12h7l-1 8 10-12h-7l1-8Z"/>',
+  pin:'<path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+  board:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-16v16"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  mic:'<rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-3 0h6"/>',
+  search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/>',
+  close:'<path d="m6 6 12 12M6 18 18 6"/>',
+  user:'<circle cx="12" cy="8" r="3.5"/><path d="M4 21v-2a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>',
+  image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1"/><path d="m4 17 5-4 3 2 4-5 4 4"/>',
+};
+function icon(name) {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icons[name]+'</svg>';
+}
+document.querySelectorAll('[data-icon]').forEach(el => el.innerHTML = icon(el.dataset.icon));
+const statuses = [
+  ['todo','К выполнению','#668199'],
+  ['doing','В работе','#2575bc'],
+  ['review','На проверке','#b77512'],
+  ['done','Готово','#338366'],
+];
+const taskDialog = $('task-dialog');
+const taskForm = $('task-form');
+const fields = taskForm.elements;
+const objectDialog = $('object-dialog');
+const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+let objects = [], tasks = [], activeId = '';
+let current = null, draftId = '', chosenPhoto = null, dragId = '', recognition = null, toastTimer;
+let saving = false, moving = false, loading = false, photoJob = null, boardLoaded = false;
+
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text != null) node.textContent = text;
+  return node;
+}
+function button(className, label, iconName) {
+  const node = element('button',className);
+  node.type = 'button';
+  node.setAttribute('aria-label',label);
+  if (iconName) node.innerHTML = icon(iconName);
+  return node;
+}
+function plural(count) {
+  const tens = count % 100, units = count % 10;
+  if (tens >= 11 && tens <= 14) return 'задач';
+  if (units === 1) return 'задача';
+  return units >= 2 && units <= 4 ? 'задачи' : 'задач';
+}
+function toast(message) {
+  clearTimeout(toastTimer);
+  $('toast').textContent = message;
+  $('toast').hidden = false;
+  toastTimer = setTimeout(() => $('toast').hidden = true, 4200);
+}
+const dbReady = new Promise((resolve,reject)=>{
+ const opening=indexedDB.open('monta-offline-board',3);
+ opening.onupgradeneeded=event=>{
+  const db=opening.result;
+  db.createObjectStore('masters',{keyPath:['objectId','key']});
+  db.createObjectStore('history',{keyPath:'id',autoIncrement:true});
+  if (event.oldVersion >= 2) return;
+  const names=db.createObjectStore('names',{keyPath:'id'});
+  if (event.oldVersion > 0) {
+   opening.transaction.objectStore('tasks').getAll().onsuccess=event=>{
+    for (const task of event.target.result) rememberName(names,task.assignee);
+   };
+   return;
+  }
+  const sites=db.createObjectStore('objects',{keyPath:'id'});
+  sites.put({id:'patriot-33',name:'Демо-объект'});
+  db.createObjectStore('tasks',{keyPath:'id'}).put({id:'check-electrician',object_id:'patriot-33',title:'Проверить работу электрика',status:'todo',priority:'normal',assignee:'',due:'',notes:'',updated:'initial',photo:''});
+ };
+ opening.onsuccess=()=>resolve(opening.result);
+ opening.onerror=()=>reject(new Error('Браузер запретил сохранение данных.'));
+});
+function rememberName(store,value) {
+ const name=(value || '').trim().replace(/\s+/gu,' ');
+ if (name) store.put({id:name.toLocaleLowerCase('ru'),name});
+}
+let savedNames=[];
+async function request(path,data){
+ const db=await dbReady;
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(['objects','tasks','names','masters','history'],data?'readwrite':'readonly');
+  const sites=tx.objectStore('objects'), cards=tx.objectStore('tasks');
+  let result={},problem;
+  tx.oncomplete=()=>resolve(result);
+  tx.onabort=()=>reject(problem||new Error('Не удалось сохранить данные в браузере.'));
+  const names=tx.objectStore('names');
+  const masters=tx.objectStore('masters');
+  const history=tx.objectStore('history');
+  const log = (objectId, action, detail) => history.add({objectId,action,detail,at:Date.now()});
+  if(path==='board'){
+   names.getAll().onsuccess=e=>result.names=e.target.result;
+   sites.getAll().onsuccess=e=>result.objects=e.target.result;
+   cards.getAll().onsuccess=e=>result.tasks=e.target.result.map(task=>({...task,has_photo:!!task.photo}));
+  } else if(path==='team' || path==='history'){
+   const store=path==='team' ? masters : history;
+   store.getAll().onsuccess=e=>result=e.target.result.filter(item=>item.objectId===data.objectId);
+  } else if(path==='master'){
+   const name=data.name.trim().replace(/s+/gu,' ');
+   if (!name || name.length>80){problem=new Error('Введите имя мастера.');tx.abort();return;}
+   const key=name.toLocaleLowerCase('ru');
+   masters.get([data.objectId,key]).onsuccess=e=>{
+    const current=e.target.result;
+    if(data.remove){
+     if(!current) return;
+     masters.delete([data.objectId,key]);
+     log(data.objectId,'Мастер убран с объекта',current.name);
+    } else {
+     if(current){problem=new Error('Этот мастер уже добавлен.');tx.abort();return;}
+     masters.add({objectId:data.objectId,key,name});
+     log(data.objectId,'Мастер добавлен на объект',name);
+    }
+   };
+  } else if(path==='objects'){
+   const name=data.name.trim();
+   if(!name){problem=new Error('Введите адрес объекта.');tx.abort();return;}
+   sites.getAll().onsuccess=e=>{result=e.target.result.find(x=>x.name.toLowerCase()===name.toLowerCase())||{id:crypto.randomUUID(),name};sites.put(result);};
+  } else {
+   cards.get(data.id).onsuccess=e=>{
+    const old=e.target.result;
+    if((old?.updated||null)!==(data.updated||null)){problem=new Error('Карточка изменилась. Откройте её заново.');problem.status=409;tx.abort();return;}
+    if(data.action==='delete'){cards.delete(data.id);log(old.object_id,'Карточка удалена',old.title);return;}
+    const updated=crypto.randomUUID();
+    const task=data.action==='move'?{...old,status:data.status,updated}:{...data,title:data.title.trim(),photo:data.photo??old?.photo??'',updated};
+    if(!task.title){problem=new Error('Введите название задачи.');tx.abort();return;}
+    cards.put(task);
+    const statusName = boardStatuses(task.object_id).find(item=>item[0]===task.status)?.[1] || task.status;
+    const statusChanged = old && old.status!==task.status;
+    log(task.object_id,!old?'Карточка создана':statusChanged?'Статус изменён':'Карточка обновлена',statusChanged?task.title+' · '+statusName:task.title);
+    if(old && old.object_id!==task.object_id) log(old.object_id,'Карточка перенесена на другой объект',task.title);
+    rememberName(names,task.assignee);
+   };
+  }
+ });
+}
+
+async function refresh(preferred = activeId) {
+  if (loading) return;
+  loading = true;
+  try {
+    ({objects,tasks,names:savedNames} = await request('board'));
+    document.getElementById('saved-names').replaceChildren(...savedNames.map(item=>new Option(item.name,item.name)));
+    activeId = objects.some(item => item.id === preferred) ? preferred : objects[0]?.id || '';
+    boardLoaded = true;
+    $('load-error').hidden = true;
+    render();
+  } catch (error) {
+    $('load-message').textContent = error.message;
+    $('load-error').hidden = false;
+    if (!activeId) $('summary').textContent = 'Задачи недоступны';
+  } finally { loading = false; }
+}
+function render() {
+  $('objects').replaceChildren(...objects.map(item => {
+    const node = button('object',item.name,'pin');
+    node.append(element('span','',item.name));
+    if (item.id === activeId) node.setAttribute('aria-current','true');
+    node.onclick = () => { activeId = item.id; $('search').value = ''; render(); };
+    return node;
+  }));
+  const object = objects.find(item => item.id === activeId);
+  const all = tasks.filter(task => task.object_id === activeId);
+  const done = all.filter(task => task.status === 'done').length;
+  $('object-title').textContent = object?.name || 'Объекты';
+  $('summary').textContent = all.length+' '+plural(all.length)+' · '+done+' выполнено';
+  $('add-task').disabled = $('voice').disabled = !object;
+  $('add-object').disabled = !boardLoaded;
+  $('team-open').disabled = $('history-open').disabled = !object;
+  renderBoard(all);
+}
+let teamObject;
+async function showMasters() {
+  const members = await request('team',{objectId:teamObject});
+  $('team-list').replaceChildren(...members.map(member=>{
+    const row=element('div','master-row');
+    const remove=button('button outline','Убрать с объекта');
+    remove.textContent='Убрать с объекта';
+    remove.onclick=async ()=>{
+      remove.disabled=true;
+      try { await request('master',{objectId:teamObject,name:member.name,remove:true}); await showMasters(); }
+      catch(error){$('team-error').textContent=error.message;remove.disabled=false;}
+    };
+    row.append(element('span','',member.name),remove);
+    return row;
+  }));
+  if(!members.length) $('team-list').append(element('p','muted','Мастера пока не добавлены.'));
+}
+$('team-open').onclick=async ()=>{
+  teamObject=activeId;
+  $('team-form').reset();
+  $('team-error').textContent='';
+  $('team-list').replaceChildren();
+  $('team-dialog').showModal();
+  try { await showMasters(); } catch(error){$('team-error').textContent=error.message;}
+};
+$('team-form').onsubmit=async event=>{
+  event.preventDefault();
+  event.submitter.disabled=true;
+  $('team-error').textContent='';
+  try {
+    await request('master',{objectId:teamObject,name:$('master-name').value});
+    $('master-name').value='';
+    await showMasters();
+    $('master-name').focus();
+  } catch(error){$('team-error').textContent=error.message;}
+  finally {event.submitter.disabled=false;}
+};
+$('history-open').onclick=async ()=>{
+  const list=$('history-list');
+  list.replaceChildren(element('li','','Загрузка…'));
+  $('history-dialog').showModal();
+  try {
+    const events=await request('history',{objectId:activeId});
+    const format=new Intl.DateTimeFormat('ru',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Moscow'});
+    list.replaceChildren(...events.reverse().map(item=>element('li','',format.format(item.at)+' · '+item.action+' · '+item.detail)));
+    if(!events.length) list.append(element('li','muted','Записей пока нет.'));
+  } catch(error){list.replaceChildren(element('li','error',error.message));}
+};
+function boardStatuses(id) {
+  const saved = localStorage.getItem('monta-columns-'+id);
+  return [...statuses,...(saved ? JSON.parse(saved) : [])];
+}
+$('new-list').onclick = () => {
+  if (!activeId) { toast('Сначала выбери или создай доску.'); return; }
+  $('column-form').reset();
+  $('column-error').textContent = '';
+  $('column-dialog').showModal();
+};
+$('column-form').onsubmit = event => {
+  event.preventDefault();
+  const name = $('column-name').value.trim();
+  const error = $('column-error');
+  error.textContent = '';
+  if (!name) { error.textContent = 'Введите название колонки.'; return; }
+  try {
+    const lists = boardStatuses(activeId);
+    if (lists.some(item => item[1].toLocaleLowerCase('ru') === name.toLocaleLowerCase('ru'))) {
+      error.textContent = 'Такая колонка уже есть.';
+      return;
+    }
+    const custom = [...lists.slice(statuses.length), [crypto.randomUUID(),name,'#7868a4']];
+    localStorage.setItem('monta-columns-'+activeId, JSON.stringify(custom));
+    $('column-dialog').close();
+    render();
+  } catch { error.textContent = 'Браузер не разрешил сохранить колонку.'; }
+};
+function setStatusOptions(id) {
+  $('task-status').replaceChildren(...boardStatuses(id).map(([value,name]) => option(name,value)));
+}
+$('task-object').onchange = () => {
+  const previous = fields.status.value;
+  setStatusOptions(fields.object_id.value);
+  fields.status.value = boardStatuses(fields.object_id.value).some(item=>item[0]===previous) ? previous : 'todo';
+};
+function renderBoard(all) {
+  const query = $('search').value.trim().toLocaleLowerCase('ru');
+  $('board').replaceChildren(...boardStatuses(activeId).map(([status, name, color]) => {
+    const list = all.filter(task => task.status === status && [task.title,task.assignee,task.notes].some(value => value.toLocaleLowerCase('ru').includes(query)));
+    const column = element('section','column');
+    const head = element('div','column-head');
+    const dot = element('span','dot');
+    dot.style.setProperty('--dot',color);
+    const heading = element('h2','',name);
+    const add = button('mini-add','Добавить задачу в колонку «'+name+'»','plus');
+    add.disabled = !activeId;
+    add.onclick = () => openTask({status});
+    head.append(dot,heading,element('span','count',list.length),add);
+    const items = element('div','cards');
+    items.append(...list.length ? list.map(card) : [element('div','empty',query ? 'Нет совпадений' : 'Пока нет задач')]);
+    column.append(head,items);
+    column.addEventListener('dragover', event => {
+      if (dragId) { event.preventDefault(); column.classList.add('drop'); }
+    });
+    column.addEventListener('dragleave', event => {
+      if (!event.relatedTarget || !column.contains(event.relatedTarget)) column.classList.remove('drop');
+    });
+    column.addEventListener('drop', event => {
+      if (!dragId) return;
+      event.preventDefault();
+      column.classList.remove('drop');
+      const task = tasks.find(task => task.id === dragId);
+      dragId = '';
+      if (task && task.status !== status) move(task,status,name);
+    });
+    return column;
+  }));
+}
+function card(task) {
+  const node = element('button','card');
+  node.type = 'button';
+  node.draggable = true;
+  if (task.priority === 'high') node.append(element('span','priority','Срочно'));
+  node.append(element('span','card-title',task.title));
+  const meta = element('span','card-meta');
+  const labels = [
+    ['user',task.assignee || 'Имя не указано'],
+    ['calendar',task.due ? new Intl.DateTimeFormat('ru',{day:'numeric',month:'short',year:'numeric'}).format(new Date(task.due+'T12:00:00')) : 'Без срока'],
+  ];
+  if (task.has_photo) labels.push(['image','Есть фото']);
+  for (const [name,text] of labels) {
+    const line = element('span');
+    line.innerHTML = icon(name);
+    line.append(document.createTextNode(text));
+    meta.append(line);
+  }
+  if (task.checks?.length) meta.append(element('span','','Чек-лист · '+task.checks.filter(item=>item.done).length+' / '+task.checks.length));
+  node.append(meta);
+  node.onclick = () => openTask({task});
+  node.ondragstart = event => { dragId = task.id; event.dataTransfer.setData('text/plain',task.id); event.dataTransfer.effectAllowed = 'move'; };
+  node.ondragend = () => { dragId = ''; document.querySelectorAll('.column.drop').forEach(el => el.classList.remove('drop')); };
+  return node;
+}
+async function move(task,status,name) {
+  if (moving) return;
+  moving = true;
+  try {
+    await request('tasks',{id:task.id,updated:task.updated,action:'move',status});
+    await refresh();
+    toast('Статус изменён · '+name);
+  } catch (error) {
+    toast(error.message);
+    await refresh();
+  } finally { moving = false; }
+}
+function option(name,value) {
+  return new Option(name,value);
+}
+$('task-status').replaceChildren(...statuses.map(([value,name]) => option(name,value)));
+function addCheck(item = {}) {
+  const row = element('div','check-row');
+  const box = document.createElement('input');
+  box.type = 'checkbox';
+  box.checked = !!item.done;
+  box.setAttribute('aria-label','Выполнено');
+  const title = document.createElement('input');
+  title.maxLength = 180;
+  title.placeholder = 'Что сделать?';
+  title.setAttribute('aria-label','Пункт чек-листа');
+  title.value = item.title || '';
+  const remove = button('text-button','Убрать пункт','close');
+  remove.onclick = () => row.remove();
+  row.append(box,title,remove);
+  $('checks').append(row);
+  return title;
+}
+$('add-check').onclick = () => addCheck().focus();
+$('system-voice').onclick = () => {
+  closeTask();
+  fields.title.focus();
+  $('voice-status').textContent = 'Выбери русский язык ввода клавишами Windows + Пробел. Нажми Windows + H, продиктуй текст карточки.';
+};
+function openTask({task = null, status = 'todo', voice = false} = {}) {
+  current = task;
+  draftId = task?.id || crypto.randomUUID();
+  chosenPhoto = null;
+  photoJob = null;
+  taskForm.reset();
+  $('checks').replaceChildren();
+  (task?.checks || []).forEach(addCheck);
+  $('task-object').replaceChildren(...objects.map(item => option(item.name,item.id)));
+  fields.object_id.value = task?.object_id || activeId;
+  setStatusOptions(fields.object_id.value);
+  fields.status.value = task?.status || status;
+  fields.priority.value = task?.priority || 'normal';
+  for (const key of ['title','assignee','due','notes']) fields[key].value = task?.[key] || '';
+  $('task-error').textContent = '';
+  $('save-task').disabled = false;
+  $('task-heading').textContent = task ? 'Карточка задачи' : 'Новая задача';
+  $('save-task').textContent = task ? 'Сохранить' : 'Создать задачу';
+  $('delete-task').hidden = !task;
+  $('voice-panel').hidden = !voice;
+  $('listen').hidden = false;
+  $('listen-label').textContent = 'Начать запись';
+  $('task-object').closest('label').hidden = voice;
+  $('voice-status').textContent = Speech ? 'Продиктуй текст карточки.' : 'В этом браузере голосовой ввод недоступен. Введите или вставьте текст.';
+  showPhoto(task?.has_photo ? task.photo : '');
+  taskDialog.showModal();
+  if (voice) $('listen').focus();
+}
+function showPhoto(src) {
+  $('photo-preview').hidden = !src;
+  if (src) $('photo-image').src = src;
+  else $('photo-image').removeAttribute('src');
+}
+function startSpeech() {
+  if (recognition) { try { recognition.stop(); } catch {} return; }
+  if (!Speech) { $('system-voice').click(); return; }
+  let speech;
+  try { speech = new Speech(); }
+  catch { $('system-voice').click(); return; }
+  recognition = speech;
+  speech.lang = 'ru-RU';
+  speech.interimResults = true;
+  speech.continuous = true;
+  $('voice-status').textContent = 'Подключение микрофона…';
+  $('listen-label').textContent = 'Остановить запись';
+  speech.onstart = () => {
+    $('listen-label').textContent = 'Остановить запись';
+    $('voice-status').textContent = 'Слушаю…';
+  };
+  speech.onresult = event => {
+    if (recognition !== speech) return;
+    const results = Array.from(event.results);
+    fields.title.value = results.map(item => item[0].transcript.trim()).join(' ').trim().slice(0,500);
+  };
+  speech.onerror = event => {
+    if (recognition !== speech) return;
+    $('voice-status').textContent = event.error === 'not-allowed'
+      ? 'Разрешите доступ к микрофону в браузере или введите текст.'
+      : 'Диктовка прервалась. Попробуйте ещё раз или введите текст.';
+  };
+  speech.onend = () => {
+    if (recognition !== speech) return;
+    recognition = null;
+    $('listen-label').textContent = 'Начать запись';
+    if ($('voice-status').textContent === 'Слушаю…') {
+      if (fields.title.value.trim()) $('voice-status').textContent = 'Текст записан. Можно сохранить карточку.';
+      else $('voice-status').textContent = 'Речь не распознана. Попробуйте ещё раз.';
+    }
+  };
+  try { speech.start(); }
+  catch {
+    recognition = null;
+    $('listen-label').textContent = 'Начать запись';
+    $('voice-status').textContent = 'Микрофон недоступен. Введите или вставьте текст.';
+  }
+}
+function closeTask() {
+  const speech = recognition;
+  recognition = null;
+  if (speech) speech.abort();
+  $('listen-label').textContent = 'Начать запись';
+}
+async function preparePhoto(file) {
+  if (file.size > 25 * 1024 * 1024) throw new Error('Выберите фото размером до 25 МБ.');
+  let image;
+  try { image = await createImageBitmap(file); }
+  catch { throw new Error('Не удалось открыть фото. Попробуйте JPG или PNG.'); }
+  const canvas = document.createElement('canvas');
+  try {
+    for (const edge of [1300,1000,750,500]) {
+      const scale = Math.min(1,edge/Math.max(image.width,image.height));
+      canvas.width = Math.max(1,Math.round(image.width*scale));
+      canvas.height = Math.max(1,Math.round(image.height*scale));
+      const ctx = canvas.getContext('2d',{alpha:false});
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(image,0,0,canvas.width,canvas.height);
+      const src = canvas.toDataURL('image/jpeg',.75);
+      if (src.length <= 480000) return src;
+    }
+    throw new Error('Фото слишком большое. Выберите другое.');
+  } finally { image.close(); }
+}
+$('photo').onchange = async () => {
+  const file = $('photo').files[0];
+  if (!file) return;
+  const job = preparePhoto(file);
+  photoJob = job;
+  $('task-error').textContent = '';
+  $('save-task').disabled = true;
+  try {
+    const result = await job;
+    if (photoJob !== job) return;
+    chosenPhoto = result;
+    showPhoto(result);
+  } catch (error) {
+    if (photoJob === job) $('task-error').textContent = error.message;
+  } finally {
+    if (photoJob === job) { photoJob = null; $('save-task').disabled = false; }
+  }
+};
+$('remove-photo').onclick = () => {
+  photoJob = null;
+  $('save-task').disabled = false;
+  chosenPhoto = '';
+  $('photo').value = '';
+  showPhoto('');
+};
+async function persistTask(data, message) {
+  if (saving || photoJob) return;
+  saving = true;
+  $('task-error').textContent = '';
+  const buttons = [...taskForm.querySelectorAll('button')];
+  buttons.forEach(item => item.disabled = true);
+  try {
+    await request('tasks',data);
+    taskDialog.close();
+    await refresh(data.object_id || activeId);
+    toast(message);
+  } catch (error) {
+    $('task-error').textContent = error.message;
+    if (error.status === 409) await refresh();
+  } finally { saving = false; buttons.forEach(item => item.disabled = false); }
+}
+taskForm.onsubmit = event => {
+  event.preventDefault();
+  const values = Object.fromEntries(new FormData(taskForm));
+  values.checks = Array.from($('checks').children, row => ({
+    done:row.children[0].checked, title:row.children[1].value.trim()
+  })).filter(item => item.title);
+  persistTask({...values,id:draftId,updated:current?.updated || null,photo:chosenPhoto},current ? 'Карточка сохранена' : 'Задача создана');
+};
+$('delete-task').onclick = () => {
+  if (current && window.confirm('Удалить эту задачу?')) persistTask({id:current.id,updated:current.updated,action:'delete'},'Задача удалена');
+};
+$('add-object').onclick = () => { $('object-form').reset(); $('object-error').textContent = ''; objectDialog.showModal(); };
+$('object-form').onsubmit = async event => {
+  event.preventDefault();
+  const submit = event.submitter;
+  submit.disabled = true;
+  try {
+    const result = await request('objects',{name:event.currentTarget.elements.name.value});
+    objectDialog.close();
+    $('search').value = '';
+    await refresh(result.id);
+    toast('Объект открыт');
+  } catch (error) { $('object-error').textContent = error.message; }
+  finally { submit.disabled = false; }
+};
+document.querySelectorAll('[data-close]').forEach(el => el.onclick = () => el.closest('dialog').close());
+taskDialog.addEventListener('close', () => { closeTask(); photoJob = null; if (!saving) $('save-task').disabled = false; });
+taskDialog.addEventListener('cancel', event => { if (saving) event.preventDefault(); });
+$('search').oninput = () => renderBoard(tasks.filter(task => task.object_id === activeId));
+$('retry').onclick = () => refresh();
+$('add-task').onclick = () => openTask();
+$('voice').onclick = () => openTask({voice:true});
+$('listen').onclick = startSpeech;
+
+$('add-object').disabled = true;
+renderBoard([]);
+refresh();
+</script></body>
+</html>
+
